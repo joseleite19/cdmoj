@@ -828,7 +828,9 @@ Deploy: `docs/DEPLOY.md`. Docs em HTML: `bash docs/build-html.sh`.
   pandoc 3.1 marca assim até o `(` comum — só estica em volta de conteúdo alto (fração, `\binom`,
   matriz, ∑), barras idem; par trocado (`[l, r)`, era ¿) vira literal; o `cases` ganha o fecho vazio
   (era a chave espelhada). E a **SINTAXE** (`fix_syntax`): `\#` (¿), `\&` (virava ∧), `\_` viram
-  texto. Fail-open
+  texto; e o **OPERANDO** (`fix_operands`): relação na ponta do grupo (`$\le 10^9$`, `$= 0$`, a
+  coluna `&= …` do `aligned`, eram ¿) ganha o grupo vazio `{}` — na RAIZ, embrulhado num grupo só
+  (lá cada filho vira uma linha do StarMath). Fail-open
   (erro = PDF como antes); o `build-ensaio-pdf.sh` faz o mesmo passo. Testes: `smoke-odt-math-bars.sh`
   (papéis + zip + `--fix`) e `render-docs.sh` (nenhum `¿` no pdftotext). Sem conserto pelo MathML:
   **acentos** (`\bar`, `\hat`, `\vec`, `\overline`…) — o importador do 25.2 escreve o acento SEM NOME
