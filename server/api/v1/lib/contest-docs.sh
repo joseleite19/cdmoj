@@ -690,10 +690,11 @@ _doc_pages(){ pdfinfo "$1" 2>/dev/null | awk '/^Pages:/{print $2; exit}'; }
 # o erro de sintaxe (¿ vermelho). O enunciado está CERTO — o autor não escapa nada. Entre o pandoc e
 # o soffice, `_doc_odt_fix_math` reescreve as barras no ODT (lib/odt-math-bars.py: abre/fecha em PAR
 # com fence, a do meio vira ∣). O mesmo passo dá a cada fórmula a fonte e o tamanho do CORPO
-# (o objeto do Math não herda o parágrafo: saía 12pt em DejaVu Serif no meio do Latin Modern 11pt).
+# (o objeto do Math não herda o parágrafo: saía 12pt em DejaVu Serif no meio do Latin Modern 11pt),
+# só estica parêntese/barra em volta de conteúdo alto, e desarma `[l, r)`, `cases` e `\#`/`\&`.
 # Fail-open: se o python falhar, o PDF sai como sairia sem ele.
-# Testes: smoke-odt-math-bars.sh (papéis) e render-docs.sh (nenhum ¿ no papel). Fora: `\overline`
-# também some no PDF (nenhuma grafia de MathML que o LibreOffice aceite foi achada).
+# Testes: smoke-odt-math-bars.sh (papéis) e render-docs.sh (nenhum ¿ no papel). Fora: ACENTOS
+# (`\bar`, `\hat`, `\overline`…) — nenhuma grafia de MathML que o LibreOffice 25.2 aceite foi achada.
 _doc_odt_fix_math(){ python3 "$_DIR/lib/odt-math-bars.py" "$1" >/dev/null 2>&1 || true; }
 _doc_html2pdf_odt(){
   local src="$1" out="$2" work rf refodt=()

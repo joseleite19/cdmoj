@@ -818,12 +818,22 @@ Deploy: `docs/DEPLOY.md`. Docs em HTML: `bash docs/build-html.sh`.
   cada fórmula é um objeto do LibreOffice Math que NÃO herda nada do parágrafo nem do reference-doc;
   o `settings.xml` do pandoc só diz `IsTextMode`, e o Math desenhava em 12pt Liberation Serif —
   ausente na imagem, caía no **DejaVu Serif**. O script grava em cada `Formula-N/settings.xml` o
-  tamanho e a família do corpo (lidos da default-style do `styles.xml`, isto é, do
-  `caderno-reference.odt`) e índices/limites a 70%; ⚠ `FontVariablesIsItalic` DEPOIS do
-  `FontNameVariables` (o nome zera o itálico). Fail-open
+  tamanho do corpo (lido da default-style do `styles.xml`, isto é, do `caderno-reference.odt`), a
+  família **CMU Serif** (`fonts-cmu`, asserção de build: o Latin Modern não tem grego e o `\alpha`
+  caía no DejaVu Serif; sem o CMU, a do corpo) e índices/limites a 70%; ⚠ `FontVariablesIsItalic`
+  DEPOIS do `FontNameVariables` (o nome zera o itálico). **Chave para depurar**: o LibreOffice NÃO
+  desenha o MathML — traduz para StarMath e lê esse texto; `soffice --convert-to odt` e o
+  `<annotation encoding="StarMath 5.0">` de cada fórmula mostram o que ele entendeu. Daí os
+  **DELIMITADORES** (`fix_brackets`): `stretchy="true"` vira `left ( … right )`, que estica, e o
+  pandoc 3.1 marca assim até o `(` comum — só estica em volta de conteúdo alto (fração, `\binom`,
+  matriz, ∑), barras idem; par trocado (`[l, r)`, era ¿) vira literal; o `cases` ganha o fecho vazio
+  (era a chave espelhada). E a **SINTAXE** (`fix_syntax`): `\#` (¿), `\&` (virava ∧), `\_` viram
+  texto. Fail-open
   (erro = PDF como antes); o `build-ensaio-pdf.sh` faz o mesmo passo. Testes: `smoke-odt-math-bars.sh`
-  (papéis + zip) e `render-docs.sh` (nenhum `¿` no pdftotext). Sem conserto conhecido: `\overline`
-  some no PDF. O ESTILO da rota
+  (papéis + zip + `--fix`) e `render-docs.sh` (nenhum `¿` no pdftotext). Sem conserto pelo MathML:
+  **acentos** (`\bar`, `\hat`, `\vec`, `\overline`…) — o importador do 25.2 escreve o acento SEM NOME
+  no StarMath e ele some (hoje sai como sinal solto acima, `csup`); o **primo** (`f'`) vem do DejaVu
+  Sans (nenhuma fonte Computer Modern da imagem tem o `′`). O ESTILO da rota
   ODT vem do **`etc/caderno-reference.odt`** (`--reference-doc`; ODT ignora CSS): corpo
   JUSTIFICADO + Preformatted Text com fundo/borda (a caixa dos exemplos) — receita de
   regeneração comentada no `contest-docs.sh`. O caderno prefere o **PDF próprio** do problema; a **capa** tem 3 modos (PDF enviado ›
